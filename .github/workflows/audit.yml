@@ -1,0 +1,33 @@
+# Check every cask on each change: style, audit (including the download and its signature),
+# and a real install, launch-free, with its zap.
+name: audit
+on:
+  push:
+  pull_request:
+jobs:
+  casks:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tap this checkout
+        run: |
+          mkdir -p "$(brew --repository)/Library/Taps/gerulata"
+          ln -s "$GITHUB_WORKSPACE" "$(brew --repository)/Library/Taps/gerulata/homebrew-tap"
+          # Homebrew 7 loads casks from third-party taps only once they are trusted.
+          if brew commands --quiet | grep -qx trust; then brew trust --tap gerulata/tap; fi
+      - name: Style
+        run: brew style gerulata/tap
+      - name: Audit
+        run: |
+          shopt -s nullglob
+          for c in Casks/*.rb; do
+            brew audit --cask --strict --online "gerulata/tap/$(basename "$c" .rb)"
+          done
+      - name: Install and zap
+        run: |
+          shopt -s nullglob
+          for c in Casks/*.rb; do
+            t="gerulata/tap/$(basename "$c" .rb)"
+            brew install --cask "$t"
+            brew uninstall --cask --zap "$t"
+          done
