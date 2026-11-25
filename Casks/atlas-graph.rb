@@ -1,6 +1,6 @@
 cask "atlas-graph" do
-  version "1.2.0"
-  sha256 "128ac0c76c8af3ea8dd67dd90d9850c5f4cddf3b2ab5917215962dfee174f54d"
+  version "1.3.0"
+  sha256 "9e44e23125d63262219c5a299c7fa3521ec993feec06b795c5e65e67927401ac"
 
   url "https://gerulata.com/download/atlas/#{version}/Atlas-#{version}-macos-universal.dmg"
   name "Atlas"
